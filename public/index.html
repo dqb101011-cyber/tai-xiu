@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    <!-- Âm thanh (Nhúng trực tiếp để không cần tải file ngoài) -->
+    <!-- Âm thanh -->
     <audio id="soundChip" src="https://assets.mixkit.co/active_storage/sfx/2571/2571.wav" preload="auto"></audio>
     <audio id="soundWin" src="https://assets.mixkit.co/active_storage/sfx/1435/1435.wav" preload="auto"></audio>
     <audio id="soundRoll" src="https://assets.mixkit.co/active_storage/sfx/2005/2005.wav" preload="auto"></audio>
@@ -57,22 +57,17 @@
                 <div class="dice-circle" id="diceCircle">
                     <div class="timer-display" id="timer">35</div>
                     
-                    <!-- Vùng xúc xắc lúc lắc -->
+                    <!-- Vùng xúc xắc (Đã bỏ bát) -->
                     <div class="dice-area" id="diceArea">
-                        <div class="dice" id="lacD1"></div>
-                        <div class="dice" id="lacD2"></div>
-                        <div class="dice" id="lacD3"></div>
-                    </div>
-                </div>
-
-                <!-- Bát Úp -->
-                <div class="bowl-container" id="bowl">
-                    <div class="bowl-cover" id="bowlCover" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">KÉO ĐỂ XEM</div>
-                    <div class="bowl-dice-area">
-                        <!-- Vùng xúc xắc kết quả -->
-                        <div class="dice" id="resD1"></div>
-                        <div class="dice" id="resD2"></div>
-                        <div class="dice" id="resD3"></div>
+                        <div class="dice" id="d1" data-value="1">
+                            <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                        </div>
+                        <div class="dice" id="d2" data-value="1">
+                            <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                        </div>
+                        <div class="dice" id="d3" data-value="1">
+                            <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                        </div>
                     </div>
                 </div>
             </div>
