@@ -1,0 +1,127 @@
+:root {
+    --gold-light: #fceabb;
+    --gold: #d4af37;
+    --gold-dark: #8a6327;
+    --bg-dark: #0a0514;
+    --panel-bg: linear-gradient(180deg, #2a1b38 0%, #150d21 100%);
+    --red: #e74c3c;
+    --blue: #3498db;
+    --green: #2ecc71;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; user-select: none; }
+
+body { background-color: var(--bg-dark); background-image: radial-gradient(circle at 50% 50%, #1c1027 0%, #0a0514 100%); color: #fff; height: 100vh; display: flex; overflow: hidden; }
+
+/* CỘT TRÁI */
+.left-sidebar { width: 70px; background: rgba(0,0,0,0.6); border-right: 1px solid var(--gold-dark); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 20px; z-index: 100; }
+.menu-icon { width: 45px; height: 45px; background: #1c1027; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); transition: 0.3s; }
+.menu-icon:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--gold); }
+
+/* CỘT GIỮA */
+.main-board { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; padding: 20px; }
+.game-table-container { position: relative; width: 100%; max-width: 800px; height: 500px; background: linear-gradient(180deg, #3a2515 0%, #150d0a 100%); border: 4px solid var(--gold); border-radius: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 30px rgba(212, 175, 55, 0.4); display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
+
+/* KHUNG TÀI XỈU */
+.bet-panel { width: 30%; height: 80%; border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 3px solid var(--gold-dark); box-shadow: inset 0 0 20px rgba(0,0,0,0.9), 0 10px 20px rgba(0,0,0,0.8); position: relative; overflow: hidden; transition: 0.3s; }
+.bet-panel.tai { background: linear-gradient(180deg, #4a1515, #1a0505); }
+.bet-panel.xiu { background: linear-gradient(180deg, #15304a, #050e1a); }
+.bet-panel h2 { font-size: 50px; font-weight: 900; margin-bottom: 10px; }
+.bet-panel.tai h2 { color: #ff6b6b; text-shadow: 0 0 15px var(--red); }
+.bet-panel.xiu h2 { color: #6bb9ff; text-shadow: 0 0 15px var(--blue); }
+.bet-amount-box { background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 10px; border: 1px solid var(--gold-dark); width: 80%; text-align: center; }
+.bet-amount { font-size: 20px; font-weight: 700; color: var(--gold-light); }
+.bet-players { font-size: 12px; color: #aaa; margin-top: 5px; }
+
+/* HIỆU ỨNG THẮNG THUA */
+.win-glow { animation: winFlash 1.5s infinite alternate; }
+@keyframes winFlash { 0% { box-shadow: inset 0 0 20px var(--green), 0 0 20px var(--green); border-color: var(--green); } 100% { box-shadow: inset 0 0 80px var(--green), 0 0 80px var(--green); border-color: var(--green); transform: scale(1.02); } }
+.lose-dim { filter: grayscale(80%) brightness(0.5); }
+
+/* VÒNG XÚC XẮC */
+.center-dice-container { position: relative; width: 220px; height: 220px; display: flex; justify-content: center; align-items: center; }
+.dice-circle { width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle, #1c1027 0%, #000 100%); border: 4px solid var(--gold); box-shadow: 0 0 30px rgba(212, 175, 55, 0.4), inset 0 0 20px #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5; }
+.timer-display { font-size: 60px; font-weight: 900; color: var(--gold-light); text-shadow: 0 0 15px var(--gold); line-height: 1; margin-bottom: 10px; }
+.dice-area { display: flex; gap: 10px; }
+
+/* XÚC XẮC 3D */
+.dice { width: 50px; height: 50px; background: #fff; border-radius: 10px; box-shadow: inset -4px -4px 10px rgba(0,0,0,0.3), 2px 5px 10px rgba(0,0,0,0.6); display: flex; flex-wrap: wrap; padding: 6px; justify-content: space-between; align-content: space-between; position: relative; }
+.dice::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border: 2px solid var(--red); border-radius: 10px; opacity: 0.8; pointer-events: none; }
+.dot { width: 10px; height: 10px; background: var(--red); border-radius: 50%; box-shadow: inset -1px -1px 3px rgba(0,0,0,0.6); }
+
+/* ẨN CHẤM XÚC XẮC */
+.dice[data-value="1"] .dot:nth-child(n+2) { display: none; }
+.dice[data-value="2"] .dot:nth-child(1), .dice[data-value="2"] .dot:nth-child(3), .dice[data-value="2"] .dot:nth-child(4), .dice[data-value="2"] .dot:nth-child(5), .dice[data-value="2"] .dot:nth-child(6), .dice[data-value="2"] .dot:nth-child(7) { display: none; }
+.dice[data-value="3"] .dot:nth-child(1), .dice[data-value="3"] .dot:nth-child(3), .dice[data-value="3"] .dot:nth-child(5), .dice[data-value="3"] .dot:nth-child(6), .dice[data-value="3"] .dot:nth-child(7) { display: none; }
+.dice[data-value="4"] .dot:nth-child(1), .dice[data-value="4"] .dot:nth-child(3), .dice[data-value="4"] .dot:nth-child(4), .dice[data-value="4"] .dot:nth-child(5), .dice[data-value="4"] .dot:nth-child(6), .dice[data-value="4"] .dot:nth-child(7) { display: none; }
+.dice[data-value="5"] .dot:nth-child(1), .dice[data-value="5"] .dot:nth-child(3), .dice[data-value="5"] .dot:nth-child(5), .dice[data-value="5"] .dot:nth-child(6), .dice[data-value="5"] .dot:nth-child(7) { display: none; }
+.dice[data-value="6"] .dot:nth-child(1), .dice[data-value="6"] .dot:nth-child(3), .dice[data-value="6"] .dot:nth-child(5), .dice[data-value="6"] .dot:nth-child(6), .dice[data-value="6"] .dot:nth-child(7) { display: none; }
+
+/* HIỆU ỨNG LẮC */
+.rolling { animation: shake 0.3s infinite; }
+@keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-3deg); } 20% { transform: translate(-3px, 0px) rotate(3deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(3deg); } 50% { transform: translate(-1px, 2px) rotate(-3deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-3deg); } 80% { transform: translate(-1px, -1px) rotate(3deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-3deg); } }
+
+/* BÁT ÚP */
+.bowl-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; z-index: 20; display: none; border: 4px solid var(--gold); background: #000; }
+.bowl-cover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #7a6343, #2a1b10); cursor: grab; display: flex; justify-content: center; align-items: center; font-weight: 900; color: var(--gold-light); text-shadow: 0 0 10px #000; font-size: 20px; transition: transform 0.1s; }
+.bowl-dice-area { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding-top: 20px; }
+
+/* NÚT ĐẶT CƯỢC */
+.bet-controls-left { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 50; }
+.chip { background: linear-gradient(180deg, #3a2515, #150d0a); border: 1px solid var(--gold); color: var(--gold-light); padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; text-align: center; width: 70px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); font-size: 14px; }
+.chip:active, .chip.active { background: var(--gold); color: #000; transform: scale(0.95); }
+.btn-allin { background: linear-gradient(180deg, #8e44ad, #5e3370); color: #fff; border-color: #9b59b6; }
+.btn-bet-main { background: linear-gradient(180deg, #fceabb, #d4af37); color: #000; padding: 15px 10px; border-radius: 20px; font-weight: 900; width: 90px; cursor: pointer; border: none; margin-top: 20px; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4); }
+.btn-cancel { background: linear-gradient(180deg, #e74c3c, #c0392b); color: #fff; padding: 10px; border-radius: 20px; font-weight: bold; width: 90px; cursor: pointer; border: none; }
+
+/* CỘT PHẢI */
+.right-sidebar { width: 300px; background: rgba(10,5,20,0.8); border-left: 1px solid var(--gold-dark); padding: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 100; }
+.auth-box { display: flex; flex-direction: column; gap: 10px; background: #150d21; padding: 20px; border-radius: 15px; border: 1px solid var(--gold-dark); }
+.auth-box input { background: #0a0514; border: 1px solid var(--gold-dark); color: #fff; padding: 12px; border-radius: 8px; outline: none; }
+.btn { padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+.btn-primary { background: linear-gradient(180deg, #fceabb, #d4af37); color: #000; }
+.user-box { display: none; flex-direction: column; gap: 10px; background: #150d21; padding: 20px; border-radius: 15px; border: 1px solid var(--gold); text-align: center; box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
+.balance { font-size: 28px; color: var(--green); font-weight: 900; text-shadow: 0 0 10px var(--green); }
+.btn-deposit { background: var(--green); color: #fff; }
+.btn-logout { background: var(--red); color: #fff; }
+
+/* CHAT */
+.chat-container { position: absolute; bottom: 20px; left: 90px; width: 450px; height: 200px; background: linear-gradient(180deg, #3a2515, #150d0a); border: 2px solid var(--gold); border-radius: 15px; display: flex; flex-direction: column; z-index: 80; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
+.chat-header { padding: 10px; display: flex; justify-content: flex-end; }
+.close-chat { cursor: pointer; color: var(--gold); font-weight: bold; font-size: 18px; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 0 15px 10px 15px; font-size: 13px; display: flex; flex-direction: column; gap: 5px; }
+.chat-msg .user { color: var(--gold-light); font-weight: bold; margin-right: 5px; }
+.chat-input-area { display: flex; padding: 10px; border-top: 1px solid var(--gold-dark); }
+.chat-input-area input { flex: 1; background: transparent; border: none; color: #fff; padding: 5px; outline: none; }
+.chat-input-area button { background: transparent; border: none; color: var(--gold); font-weight: bold; cursor: pointer; }
+
+/* MODAL & TOAST */
+.modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 999; }
+.modal-content { background: var(--panel-bg); padding: 30px; border: 2px solid var(--gold); border-radius: 15px; text-align: center; box-shadow: 0 0 50px rgba(212, 175, 55, 0.5); }
+.toast { position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.9); color: #fff; padding: 15px 25px; border-radius: 10px; font-weight: bold; z-index: 1000; display: none; align-items: center; gap: 15px; border: 2px solid var(--green); box-shadow: 0 0 20px var(--green); font-size: 16px; }
+.toast .close-btn { cursor: pointer; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 5px; }
+.history-table { width: 100%; border-collapse: collapse; margin-top: 15px; color: #fff; font-size: 14px; }
+.history-table th, .history-table td { border: 1px solid var(--gold-dark); padding: 8px; text-align: center; }
+.history-table th { background: rgba(212, 175, 55, 0.2); color: var(--gold-light); }
+
+/* RESPONSIVE MOBILE */
+@media (max-width: 900px) {
+    body { flex-direction: column; overflow-y: auto; height: auto; }
+    .left-sidebar { display: none; }
+    .right-sidebar { width: 100%; border-left: none; border-top: 1px solid var(--gold-dark); padding: 15px; order: -1; }
+    .main-board { padding: 10px; display: flex; flex-direction: column; gap: 15px; }
+    .game-table-container { flex-direction: column; height: auto; padding: 20px 10px; gap: 20px; border-radius: 20px; }
+    .bet-panel { width: 100%; height: 100px; flex-direction: row; justify-content: space-around; }
+    .bet-panel h2 { font-size: 28px; margin: 0; }
+    .bet-amount-box { width: 50%; padding: 5px 10px; }
+    .bet-amount { font-size: 18px; }
+    .center-dice-container { width: 200px; height: 200px; }
+    .timer-display { font-size: 45px; }
+    .dice { width: 45px; height: 45px; padding: 5px; }
+    .dot { width: 9px; height: 9px; }
+    .bet-controls-left { position: relative; left: 0; top: 0; transform: none; flex-direction: row; flex-wrap: wrap; justify-content: center; width: 100%; gap: 8px; }
+    .chip { width: 55px; padding: 8px 0; font-size: 12px; }
+    .btn-bet-main { width: 120px; padding: 12px; margin-top: 0; font-size: 14px; }
+    .btn-cancel { width: 80px; padding: 12px; font-size: 14px; }
+    .chat-container { position: relative; width: 100%; left: 0; bottom: 0; height: 250px; }
+}
