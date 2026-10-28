@@ -35,77 +35,38 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/taixiu')
 // ==========================================
 
 // Model Người dùng
-const UserSchema = new mongoose.Schema({
-  username: { 
-    type: String, 
-    unique: true, 
-    required: true 
-  },
-  password: { 
-    type: String, 
-    required: true 
-  },
-  balance: { 
-    type: Number, 
-    default: 0 
-  }
-});
-const User = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', new mongoose.Schema({
+  username: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
+  balance: { type: Number, default: 0 }
+}));
 
 // Model Giao dịch (Nạp/Rút)
-const TransactionSchema = new mongoose.Schema({
-  orderCode: { 
-    type: String 
-  },
-  username: { 
-    type: String 
-  },
-  amount: { 
-    type: Number 
-  },
-  type: { 
-    type: String 
-  },
-  status: { 
-    type: String 
-  },
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
-  }
-});
-const Transaction = mongoose.model('Transaction', TransactionSchema);
+const Transaction = mongoose.model('Transaction', new mongoose.Schema({
+  orderCode: { type: String },
+  username: { type: String },
+  amount: { type: Number },
+  type: { type: String },
+  status: { type: String },
+  createdAt: { type: Date, default: Date.now }
+}));
 
 // Model Lịch sử Game
-const GameHistorySchema = new mongoose.Schema({
-  sessionId: { 
-    type: Number 
-  },
-  dice: { 
-    type: [Number] 
-  },
-  sum: { 
-    type: Number 
-  },
-  result: { 
-    type: String 
-  },
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
-  }
-});
-const GameHistory = mongoose.model('GameHistory', GameHistorySchema);
-
+const GameHistory = mongoose.model('GameHistory', new mongoose.Schema({
+  sessionId: { type: Number },
+  dice: { type: [Number] },
+  sum: { type: Number },
+  result: { type: String },
+  createdAt: { type: Date, default: Date.now }
+}));
 
 // ==========================================
 // MIDDLEWARE XÁC THỰC (AUTH)
 // ==========================================
 const auth = (req, res, next) => {
   const token = req.cookies.token;
-  if (!token) {
-    return res.status(401).json({ error: 'Vui lòng đăng nhập' });
-  }
+  if (!token) return res.status(401).json({ error: 'Vui lòng đăng nhập' });
+  
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key_sunwin');
     req.user = decoded;
@@ -123,21 +84,13 @@ const auth = (req, res, next) => {
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Vui lòng nhập đủ thông tin' });
-    }
+    if (!username || !password) return res.status(400).json({ error: 'Vui lòng nhập đủ thông tin' });
     
     const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ error: 'Tài khoản này đã tồn tại' });
-    }
+    if (existingUser) return res.status(400).json({ error: 'Tài khoản này đã tồn tại' });
     
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({
-      username: username,
-      password: hashedPassword,
-      balance: 0
-    });
+    const newUser = new User({ username, password: hashedPassword, balance: 0 });
     
     await newUser.save();
     res.json({ message: 'Đăng ký tài khoản thành công' });
@@ -150,19 +103,13 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Vui lòng nhập đủ thông tin' });
-    }
+    if (!username || !password) return res.status(400).json({ error: 'Vui lòng nhập đủ thông tin' });
     
     const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(400).json({ error: 'Tài khoản hoặc mật khẩu không đúng' });
-    }
+    if (!user) return res.status(400).json({ error: 'Tài khoản hoặc mật khẩu không đúng' });
     
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ error: 'Tài khoản hoặc mật khẩu không đúng' });
-    }
+    if (!isMatch) return res.status(400).json({ error: 'Tài khoản hoặc mật khẩu không đúng' });
     
     const token = jwt.sign(
       { username: user.username }, 
@@ -181,13 +128,8 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/user', auth, async (req, res) => {
   try {
     const user = await User.findOne({ username: req.user.username });
-    if (!user) {
-      return res.status(404).json({ error: 'Không tìm thấy người dùng' });
-    }
-    res.json({ 
-      username: user.username, 
-      balance: user.balance 
-    });
+    if (!user) return res.status(404).json({ error: 'Không tìm thấy người dùng' });
+    res.json({ username: user.username, balance: user.balance });
   } catch (err) {
     res.status(500).json({ error: 'Lỗi máy chủ' });
   }
@@ -199,34 +141,20 @@ app.post('/api/deposit', auth, async (req, res) => {
     const amount = req.body.amount || 10000;
     const orderCode = 'NAP' + Math.floor(100000 + Math.random() * 900000);
     
-    const newTrans = new Transaction({
-      orderCode: orderCode,
-      username: req.user.username,
-      amount: amount,
-      type: 'nap',
-      status: 'pending'
-    });
-    await newTrans.save();
+    await new Transaction({ orderCode, username: req.user.username, amount, type: 'nap', status: 'pending' }).save();
     
     const qrUrl = `https://img.vietqr.io/image/${process.env.BANK_ID || '970423'}-${process.env.ACCOUNT_NO || '0000000000'}-compact2.png?amount=${amount}&addInfo=${orderCode}&accountName=${encodeURIComponent(process.env.ACCOUNT_NAME || 'NGUYEN VAN A')}`;
     
-    res.json({ 
-      code: orderCode, 
-      qrUrl: qrUrl 
-    });
+    res.json({ code: orderCode, qrUrl: qrUrl });
   } catch (err) {
     res.status(500).json({ error: 'Lỗi tạo giao dịch' });
   }
 });
 
-// 5. API Kiểm tra trạng thái nạp tiền
+// 5. API Kiểm tra trạng thái nạp tiền (Frontend tự động gọi để cập nhật)
 app.get('/api/check-deposit/:code', auth, async (req, res) => {
   try {
-    const trans = await Transaction.findOne({ 
-      orderCode: req.params.code, 
-      username: req.user.username 
-    });
-    
+    const trans = await Transaction.findOne({ orderCode: req.params.code, username: req.user.username });
     if (trans && trans.status === 'success') {
       res.json({ success: true, amount: trans.amount });
     } else {
@@ -241,20 +169,19 @@ app.get('/api/check-deposit/:code', auth, async (req, res) => {
 app.post('/sepay-webhook', async (req, res) => {
   try {
     const { content, transferAmount } = req.body;
+    // Tìm mã NAP... trong nội dung chuyển khoản
     const match = content.match(/NAP\d{6}/);
     
     if (match) {
       const orderCode = match[0];
-      const trans = await Transaction.findOne({ orderCode: orderCode, status: 'pending' });
+      const trans = await Transaction.findOne({ orderCode, status: 'pending' });
       
       if (trans) {
         trans.status = 'success';
         await trans.save();
         
-        await User.updateOne(
-          { username: trans.username }, 
-          { $inc: { balance: transferAmount } }
-        );
+        // Cộng tiền vào tài khoản
+        await User.updateOne({ username: trans.username }, { $inc: { balance: transferAmount } });
         console.log(`Đã cộng ${transferAmount} VNĐ cho tài khoản ${trans.username}`);
       }
     }
@@ -267,9 +194,7 @@ app.post('/sepay-webhook', async (req, res) => {
 // 7. API Lấy lịch sử phiên
 app.get('/api/history', async (req, res) => {
   try {
-    const history = await GameHistory.find()
-      .sort({ createdAt: -1 })
-      .limit(10);
+    const history = await GameHistory.find().sort({ createdAt: -1 }).limit(10);
     res.json(history);
   } catch (err) {
     res.status(500).json({ error: 'Lỗi máy chủ' });
@@ -278,7 +203,7 @@ app.get('/api/history', async (req, res) => {
 
 
 // ==========================================
-// LOGIC GAME TÀI XỈU
+// LOGIC GAME TÀI XỈU (SOCKET.IO)
 // ==========================================
 let timeLeft = 35;
 let gameState = 'BETTING';
@@ -289,10 +214,12 @@ let playersXiu = 0;
 let currentBets = [];
 let currentSessionId = 3305050;
 
+// Hàm random xúc xắc có thuật toán cân cửa (Ép kết quả)
 const rollDice = () => {
   let d1, d2, d3, sum;
   
   if (totalTai > totalXiu) {
+    // Tài nhiều hơn -> Ép ra XỈU (Tổng 3 - 10)
     do {
       d1 = Math.floor(Math.random() * 6) + 1;
       d2 = Math.floor(Math.random() * 6) + 1;
@@ -300,6 +227,7 @@ const rollDice = () => {
       sum = d1 + d2 + d3;
     } while (sum > 10);
   } else if (totalXiu > totalTai) {
+    // Xỉu nhiều hơn -> Ép ra TÀI (Tổng 11 - 18)
     do {
       d1 = Math.floor(Math.random() * 6) + 1;
       d2 = Math.floor(Math.random() * 6) + 1;
@@ -307,6 +235,7 @@ const rollDice = () => {
       sum = d1 + d2 + d3;
     } while (sum < 11);
   } else {
+    // Bằng nhau -> Random tự nhiên
     d1 = Math.floor(Math.random() * 6) + 1;
     d2 = Math.floor(Math.random() * 6) + 1;
     d3 = Math.floor(Math.random() * 6) + 1;
@@ -321,16 +250,18 @@ const rollDice = () => {
 };
 
 io.on('connection', (socket) => {
+  // Gửi trạng thái hiện tại cho client mới kết nối
   socket.emit('game_state', { 
     state: gameState, 
-    timeLeft: timeLeft, 
-    totalTai: totalTai, 
-    totalXiu: totalXiu, 
-    playersTai: playersTai, 
-    playersXiu: playersXiu, 
-    currentSessionId: currentSessionId 
+    timeLeft, 
+    totalTai, 
+    totalXiu, 
+    playersTai, 
+    playersXiu, 
+    currentSessionId 
   });
 
+  // Xử lý khi có người đặt cược
   socket.on('place_bet', async (data) => {
     if (gameState !== 'BETTING') {
       return socket.emit('bet_error', 'Đã hết thời gian đặt cược');
@@ -344,9 +275,11 @@ io.on('connection', (socket) => {
         return socket.emit('bet_error', 'Số dư tài khoản không đủ');
       }
       
+      // Trừ tiền
       user.balance -= amount;
       await user.save();
       
+      // Cập nhật tổng cược
       if (choice === 'TAI') {
         totalTai += amount;
         playersTai++;
@@ -357,63 +290,59 @@ io.on('connection', (socket) => {
       
       currentBets.push({ username, choice, amount });
       
-      io.emit('update_bets', { 
-        totalTai: totalTai, 
-        totalXiu: totalXiu, 
-        playersTai: playersTai, 
-        playersXiu: playersXiu 
-      });
+      // Cập nhật giao diện cho tất cả mọi người
+      io.emit('update_bets', { totalTai, totalXiu, playersTai, playersXiu });
       
-      socket.emit('bet_success', { 
-        balance: user.balance, 
-        choice: choice, 
-        amount: amount 
-      });
+      // Trả thông báo thành công kèm số dư mới cho người vừa đặt
+      socket.emit('bet_success', { balance: user.balance, choice, amount });
       
     } catch (err) {
       socket.emit('bet_error', 'Lỗi khi đặt cược');
     }
   });
 
+  // Xử lý chat
   socket.on('chat_message', (data) => {
     io.emit('chat_message', data);
   });
 });
 
+// Vòng lặp Game (Game Loop chạy mỗi giây)
 setInterval(async () => {
   if (timeLeft > 0) {
     timeLeft--;
     io.emit('update_timer', timeLeft);
   } else {
     if (gameState === 'BETTING') {
+      // Chuyển sang trạng thái lắc xúc xắc (5s)
       gameState = 'ROLLING';
       timeLeft = 5;
-      io.emit('game_state', { state: gameState, currentSessionId: currentSessionId });
+      io.emit('game_state', { state: gameState, currentSessionId });
       
     } else if (gameState === 'ROLLING') {
+      // Chuyển sang trạng thái công bố kết quả (5s)
       gameState = 'RESULT';
       timeLeft = 5;
       
       const resultData = rollDice();
       
-      const historyRecord = new GameHistory({
-        sessionId: currentSessionId,
-        dice: resultData.dice,
-        sum: resultData.sum,
-        result: resultData.result
-      });
-      await historyRecord.save();
+      // Lưu lịch sử
+      await new GameHistory({ 
+        sessionId: currentSessionId, 
+        dice: resultData.dice, 
+        sum: resultData.sum, 
+        result: resultData.result 
+      }).save();
       
-      let userResults = [];
+      // Xử lý trả thưởng
+      let userResults = []; // Mảng lưu kết quả thắng thua của từng user để gửi về cho họ
+      
       if (currentBets.length > 0) {
         for (let bet of currentBets) {
           let winAmount = 0;
           if (bet.choice === resultData.result) {
-            winAmount = bet.amount * 2;
-            await User.updateOne(
-              { username: bet.username }, 
-              { $inc: { balance: winAmount } }
-            );
+            winAmount = bet.amount * 2; // Thắng x2
+            await User.updateOne({ username: bet.username }, { $inc: { balance: winAmount } });
           }
           userResults.push({ 
             username: bet.username, 
@@ -424,35 +353,34 @@ setInterval(async () => {
         }
       }
       
-      io.emit('game_result', {
-        dice: resultData.dice,
-        sum: resultData.sum,
-        result: resultData.result,
-        userResults: userResults
+      // Gửi kết quả cho toàn bộ client
+      io.emit('game_result', { 
+        dice: resultData.dice, 
+        sum: resultData.sum, 
+        result: resultData.result, 
+        userResults 
       });
       
-      totalTai = 0;
-      totalXiu = 0;
-      playersTai = 0;
-      playersXiu = 0;
-      currentBets = [];
+      // Reset data cho phiên mới
+      totalTai = 0; 
+      totalXiu = 0; 
+      playersTai = 0; 
+      playersXiu = 0; 
+      currentBets = []; 
       currentSessionId++;
       
-      io.emit('update_bets', { 
-        totalTai: totalTai, 
-        totalXiu: totalXiu, 
-        playersTai: playersTai, 
-        playersXiu: playersXiu 
-      });
+      io.emit('update_bets', { totalTai, totalXiu, playersTai, playersXiu });
       
     } else if (gameState === 'RESULT') {
+      // Hết thời gian xem kết quả, quay lại trạng thái đặt cược
       gameState = 'BETTING';
       timeLeft = 35;
-      io.emit('game_state', { state: gameState, currentSessionId: currentSessionId });
+      io.emit('game_state', { state: gameState, currentSessionId });
     }
   }
 }, 1000);
 
+// Khởi chạy server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Máy chủ đang chạy tại cổng ${PORT}`);
