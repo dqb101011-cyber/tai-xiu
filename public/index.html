@@ -2,40 +2,49 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sun.Win - Tài Xỉu</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- CỘT TRÁI -->
+    <!-- CỘT TRÁI (MENU) -->
     <div class="left-sidebar">
         <div class="menu-icon" onclick="openHistory()" title="Lịch sử phiên">📊</div>
-        <div class="menu-icon" onclick="alert('Tính năng Crypto đang bảo trì!')">₿</div>
-        <div class="menu-icon" onclick="alert('Tính năng Idol đang cập nhật!')">👤</div>
-        <div class="menu-icon" onclick="alert('Tải App để chơi mượt hơn!')">📱</div>
-        <div class="menu-icon" onclick="alert('Cảnh báo bảo mật!')">⚠️</div>
+        <div class="menu-icon" onclick="showToast('Tính năng Crypto đang bảo trì!', false)">₿</div>
+        <div class="menu-icon" onclick="showToast('Tính năng Idol đang cập nhật!', false)">👤</div>
+        <div class="menu-icon" onclick="showToast('Hãy tải App để chơi mượt hơn!', false)">📱</div>
+        <div class="menu-icon" onclick="showToast('Cảnh báo: Không chia sẻ thông tin!', false)">⚠️</div>
     </div>
 
-    <!-- CỘT GIỮA -->
+    <!-- CỘT GIỮA (BÀN GAME) -->
     <div class="main-board">
-        <div class="bet-controls-left">
-            <div class="chip" onclick="selectChip(this, 1000)">1K</div>
-            <div class="chip" onclick="selectChip(this, 10000)">10K</div>
-            <div class="chip" onclick="selectChip(this, 50000)">50K</div>
-            <div class="chip" onclick="selectChip(this, 100000)">100K</div>
-            <div class="chip" onclick="selectChip(this, 500000)">500K</div>
-            <div class="chip" onclick="selectChip(this, 5000000)">5M</div>
-            <div class="chip" onclick="selectChip(this, 10000000)">10M</div>
-            <div class="chip" onclick="selectChip(this, 50000000)">50M</div>
-            <div class="chip btn-allin" onclick="allIn()">ALL-IN</div>
-            <button class="btn-bet-main" onclick="showBetOptions()">ĐẶT CƯỢC</button>
-            <button class="btn-cancel" onclick="cancelBet()">HỦY</button>
+        
+        <!-- Thanh đặt cược -->
+        <div class="bet-controls">
+            <div class="chip-row">
+                <div class="chip" onclick="selectChip(this, 1000)">1K</div>
+                <div class="chip" onclick="selectChip(this, 10000)">10K</div>
+                <div class="chip" onclick="selectChip(this, 50000)">50K</div>
+                <div class="chip" onclick="selectChip(this, 100000)">100K</div>
+                <div class="chip" onclick="selectChip(this, 500000)">500K</div>
+                <div class="chip" onclick="selectChip(this, 1000000)">1M</div>
+                <div class="chip" onclick="selectChip(this, 5000000)">5M</div>
+                <div class="chip" onclick="selectChip(this, 10000000)">10M</div>
+            </div>
+            <div class="action-row">
+                <button class="btn-allin" onclick="allIn()">ALL-IN</button>
+                <div class="current-bet-display">Cược: <span id="betDisplay">0</span></div>
+                <button class="btn-cancel" onclick="cancelBet()">HỦY</button>
+            </div>
         </div>
 
+        <!-- Khung Tài Xỉu Chính -->
         <div class="game-table-container">
-            <div class="bet-panel tai" id="panelTai">
+            
+            <!-- Cửa Tài (Click trực tiếp) -->
+            <div class="bet-panel tai" id="panelTai" onclick="placeBet('TAI')">
                 <h2>TÀI</h2>
                 <div class="bet-amount-box">
                     <div class="bet-amount" id="totalTai">0</div>
@@ -43,11 +52,14 @@
                 </div>
             </div>
 
+            <!-- Vòng Xúc Xắc -->
             <div class="center-dice-container">
-                <div class="session-code text-gold" style="position: absolute; top: -30px; right: 0; font-size: 14px;">Mã phiên: #<span id="sessionCodeDisplay">3305050</span></div>
+                <div class="session-code">Mã phiên: #<span id="sessionCodeDisplay">3305050</span></div>
                 
                 <div class="dice-circle" id="diceCircle">
                     <div class="timer-display" id="timer">35</div>
+                    
+                    <!-- Xúc xắc lúc lắc -->
                     <div class="dice-area" id="diceArea">
                         <div class="dice" data-value="1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
                         <div class="dice" data-value="1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
@@ -55,8 +67,9 @@
                     </div>
                 </div>
 
+                <!-- Bát Úp Kéo -->
                 <div class="bowl-container" id="bowl">
-                    <div class="bowl-cover" id="bowlCover" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">KÉO ĐỂ MỞ</div>
+                    <div class="bowl-cover" id="bowlCover" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">KÉO ĐỂ XEM</div>
                     <div class="bowl-dice-area">
                         <div class="dice" id="resD1" data-value="1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
                         <div class="dice" id="resD2" data-value="1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
@@ -65,7 +78,8 @@
                 </div>
             </div>
 
-            <div class="bet-panel xiu" id="panelXiu">
+            <!-- Cửa Xỉu (Click trực tiếp) -->
+            <div class="bet-panel xiu" id="panelXiu" onclick="placeBet('XIU')">
                 <h2>XỈU</h2>
                 <div class="bet-amount-box">
                     <div class="bet-amount" id="totalXiu">0</div>
@@ -74,8 +88,9 @@
             </div>
         </div>
 
+        <!-- Khung Chat -->
         <div class="chat-container" id="chatBox">
-            <div class="chat-header" onclick="toggleChat()"><span class="close-chat">✕</span></div>
+            <div class="chat-header" onclick="toggleChat()"><span class="close-chat">✖</span></div>
             <div class="chat-messages" id="chatMessages">
                 <div class="chat-msg"><span class="user">Hệ thống:</span> Chào mừng đến với Sun.Win!</div>
             </div>
@@ -86,34 +101,37 @@
         </div>
     </div>
 
-    <!-- CỘT PHẢI -->
+    <!-- CỘT PHẢI (USER) -->
     <div class="right-sidebar">
         <div class="auth-box" id="authForm">
             <input type="text" id="usernameInput" placeholder="Tài khoản">
             <input type="password" id="passwordInput" placeholder="Mật khẩu">
             <button class="btn btn-primary" onclick="login()">ĐĂNG NHẬP</button>
-            <button class="btn" style="background:transparent; border:1px solid var(--gold); color:var(--gold);" onclick="register()">ĐĂNG KÝ</button>
+            <button class="btn btn-register" onclick="register()">ĐĂNG KÝ</button>
         </div>
+
         <div class="user-box" id="userBox">
-            <div style="color: #fff;">👤 <span id="welcomeUser"></span></div>
+            <div class="user-greeting">👤 <span id="welcomeUser"></span></div>
             <div class="balance" id="userBalance">0 VNĐ</div>
             <button class="btn btn-deposit" onclick="deposit()">NẠP TIỀN</button>
             <button class="btn btn-logout" onclick="logout()">ĐĂNG XUẤT</button>
         </div>
     </div>
 
-    <!-- MODALS & TOAST -->
+    <!-- Modal Nạp Tiền QR -->
     <div class="modal" id="qrModal">
         <div class="modal-content">
             <h3 style="color: var(--gold); margin-bottom: 10px;">NẠP TIỀN TỰ ĐỘNG</h3>
-            <p>Mã đơn: <strong id="qrOrderCode" style="color: var(--red);"></strong></p>
+            <p>Mã đơn: <strong id="qrOrderCode" style="color: var(--red); font-size: 20px;"></strong></p>
             <img id="qrImage" src="" style="width: 250px; height: 250px; margin: 15px 0; border-radius: 10px; border: 2px solid var(--gold);">
-            <button class="btn btn-logout" onclick="document.getElementById('qrModal').style.display='none'">ĐÓNG</button>
+            <p style="font-size: 12px; color: #aaa;">Chuyển khoản đúng nội dung để được cộng tiền tự động.</p>
+            <button class="btn btn-logout" style="margin-top: 15px; width: 100%;" onclick="document.getElementById('qrModal').style.display='none'">ĐÓNG</button>
         </div>
     </div>
 
+    <!-- Modal Lịch Sử -->
     <div class="modal" id="historyModal">
-        <div class="modal-content" style="width: 90%; max-width: 600px;">
+        <div class="modal-content" style="width: 90%; max-width: 500px;">
             <h3 style="color: var(--gold); margin-bottom: 10px;">LỊCH SỬ PHIÊN</h3>
             <table class="history-table">
                 <thead><tr><th>Phiên</th><th>Xúc xắc</th><th>Tổng</th><th>Kết quả</th></tr></thead>
@@ -123,12 +141,13 @@
         </div>
     </div>
 
+    <!-- Thông báo (Toast) -->
     <div class="toast" id="toastBox">
         <span id="toastText"></span>
-        <span class="close-btn" onclick="document.getElementById('toastBox').style.display='none'">✕</span>
+        <span class="close-btn" onclick="document.getElementById('toastBox').style.display='none'">✖</span>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
 </body>
-</html>
+                </html>
