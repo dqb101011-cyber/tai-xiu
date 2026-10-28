@@ -109,7 +109,11 @@ app.get('/api/history', async (req, res) => {
 });
 
 // --- LOGIC GAME ---
-let timeLeft = 35, gameState = 'BETTING', totalTai = 0, totalXiu = 0, playersTai = 0, playersXiu = 0, currentBets = [], currentSessionId = 3305050;
+let timeLeft = 35, gameState = 'BETTING', totalTai = 0, totalXiu = 0, currentSessionId = 3305050;
+let currentBets = [];
+// Sử dụng Set để đếm số người chơi chính xác (không bị đếm trùng)
+let playersTaiSet = new Set();
+let playersXiuSet = new Set();
 
 const rollDice = () => {
   let d1, d2, d3, sum;
@@ -120,7 +124,7 @@ const rollDice = () => {
 };
 
 io.on('connection', (socket) => {
-  socket.emit('game_state', { state: gameState, timeLeft, totalTai, totalXiu, playersTai, playersXiu, currentSessionId });
+  socket.emit('game_state', { state: gameState, timeLeft, totalTai, totalXiu, playersTai: playersTaiSet.size, playersXiu: playersXiuSet.size, currentSessionId });
   
   socket.on('place_bet', async (data) => {
     if (gameState !== 'BETTING') return socket.emit('bet_error', 'Đã hết thời gian đặt cược');
@@ -130,17 +134,25 @@ io.on('connection', (socket) => {
       const user = await User.findOne({ username });
       if (!user || user.balance < amount) return socket.emit('bet_error', 'Số dư không đủ');
       
-      // Trừ tiền
       user.balance -= amount;
       await user.save();
       
-      // Cập nhật tổng
-      if (choice === 'TAI') { totalTai += amount; playersTai++; } 
-      else { totalXiu += amount; playersXiu++; }
+      if (choice === 'TAI') { 
+        totalTai += amount; 
+        playersTaiSet.add(username); // Thêm user vào Set
+      } else { 
+        totalXiu += amount; 
+        playersXiuSet.add(username); // Thêm user vào Set
+      }
       
       currentBets.push({ username, choice, amount });
       
-      io.emit('update_bets', { totalTai, totalXiu, playersTai, playersXiu });
+      io.emit('update_bets', { 
+        totalTai, 
+        totalXiu, 
+        playersTai: playersTaiSet.size, 
+        playersXiu: playersXiuSet.size 
+      });
       
       // Trả về số dư mới và thông tin cược để Frontend thông báo ĐÚNG SỐ TIỀN
       socket.emit('bet_success', { balance: user.balance, choice, amount });
@@ -154,7 +166,10 @@ io.on('connection', (socket) => {
 setInterval(async () => {
   if (timeLeft > 0) { timeLeft--; io.emit('update_timer', timeLeft); } 
   else {
-    if (gameState === 'BETTING') { gameState = 'ROLLING'; timeLeft = 5; io.emit('game_state', { state: gameState, currentSessionId }); } 
+    if (gameState === 'BETTING') { 
+      gameState = 'ROLLING'; timeLeft = 5; 
+      io.emit('game_state', { state: gameState, currentSessionId }); 
+    } 
     else if (gameState === 'ROLLING') {
       gameState = 'RESULT'; timeLeft = 5;
       const resultData = rollDice();
@@ -174,8 +189,12 @@ setInterval(async () => {
       
       io.emit('game_result', { dice: resultData.dice, sum: resultData.sum, result: resultData.result, userResults });
       
-      totalTai = 0; totalXiu = 0; playersTai = 0; playersXiu = 0; currentBets = []; currentSessionId++;
-      io.emit('update_bets', { totalTai, totalXiu, playersTai, playersXiu });
+      // Reset data
+      totalTai = 0; totalXiu = 0; 
+      playersTaiSet.clear(); playersXiuSet.clear(); 
+      currentBets = []; currentSessionId++;
+      
+      io.emit('update_bets', { totalTai, totalXiu, playersTai: 0, playersXiu: 0 });
     } else if (gameState === 'RESULT') { 
       gameState = 'BETTING'; timeLeft = 35; 
       io.emit('game_state', { state: gameState, currentSessionId }); 
