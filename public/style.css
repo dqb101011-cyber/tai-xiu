@@ -21,7 +21,6 @@ body { background: var(--bg-dark); background-image: radial-gradient(circle at 5
 .btn-cancel { background: linear-gradient(180deg, #e74c3c, #c0392b); color: #fff; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; border: none; }
 .current-bet-display { color: var(--gold-light); font-weight: 900; font-size: 18px; text-shadow: 0 0 10px var(--gold); }
 
-/* BÀN GAME */
 .game-table-container { position: relative; width: 100%; max-width: 800px; height: 380px; background: linear-gradient(180deg, #3a2515 0%, #150d0a 100%); border: 4px solid var(--gold); border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 30px rgba(212, 175, 55, 0.4); display: flex; justify-content: space-between; align-items: center; padding: 20px; }
 
 .bet-panel { width: 28%; height: 70%; border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 3px solid var(--gold-dark); box-shadow: inset 0 0 20px rgba(0,0,0,0.9), 0 10px 20px rgba(0,0,0,0.8); position: relative; overflow: hidden; transition: 0.3s; cursor: pointer; }
@@ -45,25 +44,28 @@ body { background: var(--bg-dark); background-image: radial-gradient(circle at 5
 .timer-display { font-size: 50px; font-weight: 900; color: var(--gold-light); text-shadow: 0 0 15px var(--gold); line-height: 1; margin-bottom: 10px; }
 .dice-area { display: flex; gap: 8px; }
 
-/* XÚC XẮC 3D */
-.dice { width: 45px; height: 45px; background: #fff; border-radius: 8px; box-shadow: inset -3px -3px 8px rgba(0,0,0,0.3), 2px 4px 8px rgba(0,0,0,0.6); display: flex; flex-wrap: wrap; padding: 5px; justify-content: space-between; align-content: space-between; position: relative; }
-.dice::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border: 2px solid var(--red); border-radius: 8px; opacity: 0.8; pointer-events: none; }
-.dot { width: 8px; height: 8px; background: var(--red); border-radius: 50%; box-shadow: inset -1px -1px 3px rgba(0,0,0,0.6); display: none; }
+/* XÚC XẮC 3D BẰNG CSS GRID */
+.dice { 
+    width: 45px; height: 45px; background: #fff; border-radius: 8px; 
+    box-shadow: inset -3px -3px 8px rgba(0,0,0,0.3), 2px 4px 8px rgba(0,0,0,0.6); 
+    border: 2px solid var(--red);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 4px;
+}
+.dot { width: 8px; height: 8px; background: var(--red); border-radius: 50%; margin: auto; box-shadow: inset -1px -1px 3px rgba(0,0,0,0.6); display: none; }
 
-/* CSS Vẽ nốt chấm xúc xắc (Dùng JS để bật/tắt) */
-.dice[data-value="1"] .dot:nth-child(1) { display: block; }
-.dice[data-value="2"] .dot:nth-child(1), .dice[data-value="2"] .dot:nth-child(2) { display: block; }
-.dice[data-value="3"] .dot:nth-child(1), .dice[data-value="3"] .dot:nth-child(2), .dice[data-value="3"] .dot:nth-child(3) { display: block; }
-.dice[data-value="4"] .dot:nth-child(1), .dice[data-value="4"] .dot:nth-child(2), .dice[data-value="4"] .dot:nth-child(3), .dice[data-value="4"] .dot:nth-child(4) { display: block; }
-.dice[data-value="5"] .dot:nth-child(1), .dice[data-value="5"] .dot:nth-child(2), .dice[data-value="5"] .dot:nth-child(3), .dice[data-value="5"] .dot:nth-child(4), .dice[data-value="5"] .dot:nth-child(5) { display: block; }
-.dice[data-value="6"] .dot:nth-child(1), .dice[data-value="6"] .dot:nth-child(2), .dice[data-value="6"] .dot:nth-child(3), .dice[data-value="6"] .dot:nth-child(4), .dice[data-value="6"] .dot:nth-child(5), .dice[data-value="6"] .dot:nth-child(6) { display: block; }
+/* Hiển thị chấm theo giá trị */
+.dice[data-value="1"] .dot:nth-child(5) { display: block; }
+.dice[data-value="2"] .dot:nth-child(1), .dice[data-value="2"] .dot:nth-child(9) { display: block; }
+.dice[data-value="3"] .dot:nth-child(1), .dice[data-value="3"] .dot:nth-child(5), .dice[data-value="3"] .dot:nth-child(9) { display: block; }
+.dice[data-value="4"] .dot:nth-child(1), .dice[data-value="4"] .dot:nth-child(3), .dice[data-value="4"] .dot:nth-child(7), .dice[data-value="4"] .dot:nth-child(9) { display: block; }
+.dice[data-value="5"] .dot:nth-child(1), .dice[data-value="5"] .dot:nth-child(3), .dice[data-value="5"] .dot:nth-child(5), .dice[data-value="5"] .dot:nth-child(7), .dice[data-value="5"] .dot:nth-child(9) { display: block; }
+.dice[data-value="6"] .dot:nth-child(1), .dice[data-value="6"] .dot:nth-child(3), .dice[data-value="6"] .dot:nth-child(4), .dice[data-value="6"] .dot:nth-child(6), .dice[data-value="6"] .dot:nth-child(7), .dice[data-value="6"] .dot:nth-child(9) { display: block; }
 
 .rolling { animation: shake 0.3s infinite; }
 @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-3deg); } 20% { transform: translate(-3px, 0px) rotate(3deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(3deg); } 50% { transform: translate(-1px, 2px) rotate(-3deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-3deg); } 80% { transform: translate(-1px, -1px) rotate(3deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-3deg); } }
-
-.bowl-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; z-index: 20; display: none; border: 4px solid var(--gold); background: #000; }
-.bowl-cover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #7a6343, #2a1b10); cursor: grab; display: flex; justify-content: center; align-items: center; font-weight: 900; color: var(--gold-light); font-size: 16px; transition: transform 0.1s; }
-.bowl-dice-area { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; padding-top: 15px; }
 
 /* CỘT PHẢI */
 .right-sidebar { width: 280px; background: rgba(10,5,20,0.9); border-left: 1px solid var(--gold-dark); padding: 15px; display: flex; flex-direction: column; gap: 15px; z-index: 100; }
@@ -120,9 +122,6 @@ body { background: var(--bg-dark); background-image: radial-gradient(circle at 5
     .timer-display { font-size: 35px; margin-bottom: 5px; }
     .dice-area { gap: 4px; }
     .dice { width: 30px; height: 30px; padding: 3px; border-radius: 5px; }
-    .dice::after { border-width: 1px; }
     .dot { width: 6px; height: 6px; }
-    .bowl-cover { font-size: 12px; }
-    .bowl-dice-area { gap: 4px; padding-top: 5px; }
     .chat-container { position: relative; width: 100%; left: 0; bottom: 0; margin-top: 10px; height: 200px; }
-                 }
+    }
