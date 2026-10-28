@@ -9,19 +9,21 @@
 </head>
 <body>
 
-    <!-- CỘT TRÁI (MENU) -->
+    <!-- Âm thanh (Nhúng trực tiếp để không cần tải file ngoài) -->
+    <audio id="soundChip" src="https://assets.mixkit.co/active_storage/sfx/2571/2571.wav" preload="auto"></audio>
+    <audio id="soundWin" src="https://assets.mixkit.co/active_storage/sfx/1435/1435.wav" preload="auto"></audio>
+    <audio id="soundRoll" src="https://assets.mixkit.co/active_storage/sfx/2005/2005.wav" preload="auto"></audio>
+    <audio id="soundLose" src="https://assets.mixkit.co/active_storage/sfx/1533/1533.wav" preload="auto"></audio>
+
     <div class="left-sidebar">
-        <div class="menu-icon" onclick="openHistory()" title="Lịch sử phiên">📊</div>
-        <div class="menu-icon" onclick="showToast('Tính năng Crypto đang bảo trì!', false)">₿</div>
-        <div class="menu-icon" onclick="showToast('Tính năng Idol đang cập nhật!', false)">👤</div>
-        <div class="menu-icon" onclick="showToast('Hãy tải App để chơi mượt hơn!', false)">📱</div>
-        <div class="menu-icon" onclick="showToast('Cảnh báo: Không chia sẻ thông tin!', false)">⚠️</div>
+        <div class="menu-icon" onclick="openHistory()" title="Lịch sử">📊</div>
+        <div class="menu-icon" onclick="showToast('Bảo trì!', false)">₿</div>
+        <div class="menu-icon" onclick="showToast('Cập nhật!', false)">👤</div>
+        <div class="menu-icon" onclick="showToast('Tải App!', false)">📱</div>
+        <div class="menu-icon" onclick="showToast('Cảnh báo!', false)">⚠️</div>
     </div>
 
-    <!-- CỘT GIỮA (BÀN GAME) -->
     <div class="main-board">
-        
-        <!-- Thanh đặt cược -->
         <div class="bet-controls">
             <div class="chip-row">
                 <div class="chip" onclick="selectChip(this, 1000)">1K</div>
@@ -40,10 +42,7 @@
             </div>
         </div>
 
-        <!-- Khung Tài Xỉu Chính -->
         <div class="game-table-container">
-            
-            <!-- Cửa Tài (Click trực tiếp) -->
             <div class="bet-panel tai" id="panelTai" onclick="placeBet('TAI')">
                 <h2>TÀI</h2>
                 <div class="bet-amount-box">
@@ -52,33 +51,32 @@
                 </div>
             </div>
 
-            <!-- Vòng Xúc Xắc -->
             <div class="center-dice-container">
                 <div class="session-code">Mã phiên: #<span id="sessionCodeDisplay">3305050</span></div>
                 
                 <div class="dice-circle" id="diceCircle">
                     <div class="timer-display" id="timer">35</div>
                     
-                    <!-- Xúc xắc lúc lắc -->
+                    <!-- Vùng xúc xắc lúc lắc -->
                     <div class="dice-area" id="diceArea">
-                        <div class="dice" data-value="1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                        <div class="dice" data-value="1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                        <div class="dice" data-value="1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                        <div class="dice" id="lacD1"></div>
+                        <div class="dice" id="lacD2"></div>
+                        <div class="dice" id="lacD3"></div>
                     </div>
                 </div>
 
-                <!-- Bát Úp Kéo -->
+                <!-- Bát Úp -->
                 <div class="bowl-container" id="bowl">
                     <div class="bowl-cover" id="bowlCover" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">KÉO ĐỂ XEM</div>
                     <div class="bowl-dice-area">
-                        <div class="dice" id="resD1" data-value="1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                        <div class="dice" id="resD2" data-value="1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                        <div class="dice" id="resD3" data-value="1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                        <!-- Vùng xúc xắc kết quả -->
+                        <div class="dice" id="resD1"></div>
+                        <div class="dice" id="resD2"></div>
+                        <div class="dice" id="resD3"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Cửa Xỉu (Click trực tiếp) -->
             <div class="bet-panel xiu" id="panelXiu" onclick="placeBet('XIU')">
                 <h2>XỈU</h2>
                 <div class="bet-amount-box">
@@ -88,20 +86,18 @@
             </div>
         </div>
 
-        <!-- Khung Chat -->
         <div class="chat-container" id="chatBox">
             <div class="chat-header" onclick="toggleChat()"><span class="close-chat">✖</span></div>
             <div class="chat-messages" id="chatMessages">
                 <div class="chat-msg"><span class="user">Hệ thống:</span> Chào mừng đến với Sun.Win!</div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Nhập nội dung chat..." onkeypress="handleChatEnter(event)">
+                <input type="text" id="chatInput" placeholder="Nhập chat..." onkeypress="handleChatEnter(event)">
                 <button onclick="sendChat()">Gửi</button>
             </div>
         </div>
     </div>
 
-    <!-- CỘT PHẢI (USER) -->
     <div class="right-sidebar">
         <div class="auth-box" id="authForm">
             <input type="text" id="usernameInput" placeholder="Tài khoản">
@@ -118,18 +114,15 @@
         </div>
     </div>
 
-    <!-- Modal Nạp Tiền QR -->
     <div class="modal" id="qrModal">
         <div class="modal-content">
             <h3 style="color: var(--gold); margin-bottom: 10px;">NẠP TIỀN TỰ ĐỘNG</h3>
             <p>Mã đơn: <strong id="qrOrderCode" style="color: var(--red); font-size: 20px;"></strong></p>
             <img id="qrImage" src="" style="width: 250px; height: 250px; margin: 15px 0; border-radius: 10px; border: 2px solid var(--gold);">
-            <p style="font-size: 12px; color: #aaa;">Chuyển khoản đúng nội dung để được cộng tiền tự động.</p>
             <button class="btn btn-logout" style="margin-top: 15px; width: 100%;" onclick="document.getElementById('qrModal').style.display='none'">ĐÓNG</button>
         </div>
     </div>
 
-    <!-- Modal Lịch Sử -->
     <div class="modal" id="historyModal">
         <div class="modal-content" style="width: 90%; max-width: 500px;">
             <h3 style="color: var(--gold); margin-bottom: 10px;">LỊCH SỬ PHIÊN</h3>
@@ -141,7 +134,6 @@
         </div>
     </div>
 
-    <!-- Thông báo (Toast) -->
     <div class="toast" id="toastBox">
         <span id="toastText"></span>
         <span class="close-btn" onclick="document.getElementById('toastBox').style.display='none'">✖</span>
@@ -150,4 +142,4 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
 </body>
-                </html>
+</html>
